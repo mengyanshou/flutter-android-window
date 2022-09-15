@@ -14,5 +14,11 @@
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+
+        <!-- 隐藏标题栏 -->
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+<!--        <item name="android:windowContentOverlay">@null</item>-->
     </style>
 </resources>

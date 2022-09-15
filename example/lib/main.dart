@@ -1,15 +1,34 @@
 import 'package:android_window/main.dart' as android_window;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'android_window.dart';
 
 @pragma('vm:entry-point')
 void androidWindow() {
   runApp(const AndroidWindowApp());
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
 }
 
 void main() {
   runApp(const App());
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
 }
 
 class App extends StatelessWidget {
