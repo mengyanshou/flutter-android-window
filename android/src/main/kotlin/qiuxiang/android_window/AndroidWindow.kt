@@ -3,9 +3,12 @@ package qiuxiang.android_window
 import android.annotation.SuppressLint
 import android.app.Service
 import android.graphics.PixelFormat
+import android.os.Build
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import io.flutter.embedding.android.FlutterSurfaceView
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
@@ -44,10 +47,55 @@ class AndroidWindow(
             @Suppress("Deprecation")
             WindowManager.LayoutParams.TYPE_TOAST
         },
-        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN) or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
+        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN) or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
         PixelFormat.TRANSLUCENT
     )
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    private val dragListener = View.OnDragListener { _, event ->
+//        val channel = channel ?: return@OnDragListener false
+        when (event.action) {
+            DragEvent.ACTION_DRAG_ENTERED -> {
+
+                Log.e("Nightmare", "ACTION_DRAG_ENTERED");
+//                channel.invokeMethod("entered", listOf(event.x, event.y))
+            }
+            DragEvent.ACTION_DRAG_LOCATION -> {
+                Log.e("Nightmare", "ACTION_DRAG_LOCATION");
+//                channel.invokeMethod("updated", listOf(event.x, event.y))
+            }
+            DragEvent.ACTION_DRAG_EXITED -> {
+                Log.e("Nightmare", "ACTION_DRAG_EXITED");
+//                channel.invokeMethod("exited", null)
+            }
+            DragEvent.ACTION_DROP -> {
+                app?.activity?.requestDragAndDropPermissions(event) ;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Log.e("Nightmare", "drag");
+//                    handleDrop(event, channel, activity!!)
+                }
+            }
+        }
+        return@OnDragListener true
+    }
+
+//    @RequiresApi(Build.VERSION_CODES.N)
+//    private fun handleDrop(event: DragEvent, channel: MethodChannel, activity: Activity) {
+//        val permission = activity.requestDragAndDropPermissions(event) ?: return
+//
+//        val result = mutableListOf<String>()
+//        for (i in 0 until event.clipData.itemCount) {
+//            event.clipData.getItemAt(i)?.uri?.let {
+//                result.add(it.toString())
+//            }
+//        }
+//        permission.release()
+//
+//        channel.invokeMethod("performOperation", result)
+//    }
+
+
+    @RequiresApi(Build.VERSION_CODES.N)
     fun open() {
         engine.platformViewsController.attach(
             inflater.context,
@@ -92,14 +140,15 @@ class AndroidWindow(
         rootView.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    layoutParams.flags =
-                        layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     windowManager.updateViewLayout(rootView, layoutParams)
                     true
                 }
                 else -> false
             }
         }
+        flutterView.setOnDragListener(dragListener);
+        rootView.setOnDragListener(dragListener);
         engine.lifecycleChannel.appIsResumed()
         rootView.findViewById<LinearLayout>(R.id.floating_window)
             .addView(
